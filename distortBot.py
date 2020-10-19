@@ -28,8 +28,6 @@ def distort(imageIn, imageOut, dims, pct, directory, user_id):
     print(f"{pct}%: {imageIn} -> {imageOut}")
     os.system(f"magick toDistort{user_id}.jpg -liquid-rescale {pct}x{pct}%! -resize {dims[1]}x{dims[0]}! {imageOut}")
 
-# mutex = Lock()
-
 # Gif command to reply and return to GET_GIF
 def gif(update, context):
 
