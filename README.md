@@ -4,4 +4,6 @@ This is bot used to distort images and create a GIF with the frames. It's made j
 
 ## Usage:
 Look for @theDistortionBot at Telegram.
-Type /gif and wait for the bot's reply. Then all you have to do is send the photo you want to distort.
+
+* /gif: Type /gif and wait for a reply. Then just send a photo and wait for the distorted GIF.
+* /audio: Send an audio and reply to it with /audio.
