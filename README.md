@@ -1,6 +1,6 @@
 # Distortion-Bot-for-Telegram
 
-This is bot used to distort images and audios. It's made just for fun :)
+This bot is used to distort images and audios. It's made just for fun :)
 
 ## Usage:
 Look for @theDistortionBot on Telegram.
