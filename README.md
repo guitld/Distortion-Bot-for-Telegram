@@ -5,5 +5,5 @@ This bot is used to distort images and audios. It's made just for fun :)
 ## Usage:
 Look for @theDistortionBot on Telegram.
 
-* /gif: Type /gif and wait for a reply. Then just send a photo and wait for the distorted GIF.
+* /gif: Send an image and reply to it with /gif.
 * /audio: Send an audio and reply to it with /audio.
