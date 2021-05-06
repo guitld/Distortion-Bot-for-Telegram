@@ -9,7 +9,6 @@ import psutil
 import ffmpeg
 
 TOKEN = ""
-GET_GIF = 0
 
 # Start command that explains the usage of the bot
 def start(update, context):     
@@ -19,7 +18,7 @@ def start(update, context):
 # Help command that explains the usage of the bot
 def help(update, context):
 
-    update.message.reply_text("/gif - Send me a picture and I'll create a distorted gif on it\n/audio - Reply an audio and I'll distort it")
+    update.message.reply_text("/gif - Reply with a picture and I'll create a distorted gif on it\n/audio - Reply an audio and I'll distort it")
 
 # Distort function using imagemmagick
 def distort(imageIn, imageOut, dims, pct, directory, user_id):
@@ -27,18 +26,11 @@ def distort(imageIn, imageOut, dims, pct, directory, user_id):
     # Using ImageMagick to create frames of the distorted image
     if imageOut in os.listdir(directory): return
     print(f"{pct}%: {imageIn} -> {imageOut}")
-    os.system(f"magick toDistort{user_id}.jpg -liquid-rescale {pct}x{pct}%! -resize {dims[1]}x{dims[0]}! {imageOut}")
+    os.system(f"convert toDistort{user_id}.jpg -liquid-rescale {pct}x{pct}%! -resize {dims[1]}x{dims[0]}! {imageOut}")
 
 def vibrato(audioIn, audioOut, pct=12):
     print(f"{pct}%: {audioIn} -> {audioOut}")
     os.system(f"ffmpeg -i {audioIn} -filter_complex \"vibrato=f={pct}\" {audioOut}")
-
-# Gif command to reply and return to GET_GIF
-def gif(update, context):
-
-    update.message.reply_text("Send me a pic :)")
-
-    return GET_GIF
 
 # Function to enable multithread on the distort function in order to make it faster
 def enableMultithread(function, args):
@@ -48,36 +40,27 @@ def enableMultithread(function, args):
     pool.close()
     pool.join()
 
+def deleteDirs(directory, file1, file2, file3, user_id):
+
+    # Deleting the created and downloaded files
+    if directory:
+        os.system(f"rm -rf {directory}")
+    os.remove(f"{file1[:-4]}{user_id}{file1[len(file1) -  4::]}")
+    os.remove(f"{file2[:-4]}{user_id}{file2[len(file2) -  4::]}")
+    if file3:
+        os.remove(f"{file3[:-4]}{user_id}{file3[len(file3) -  4::]}")
+
+# Function to download the image from the user's replay
 def downloadImage(update, context, pic, user_id):
     
      # First message to the bot
-    if pic:
-        imageIn = update.message.photo[-1].file_id
-        image = context.bot.get_file(file_id = imageIn)
-        image.download(f"toDistort{user_id}.jpg")
-        update.message.reply_text("yOuR pHoTO iS bEinG dIsTorRTeD")
-        return image
-    # If is not the user's first message to the bot
-    else: 
-        update.message.reply_text("Send me a pic :)")
-        if update.message.photo:
-            update.message.reply_text("yOuR pHoTO iS bEinG dIsTorRTeD")
-
-def downloadAudio(update, context, audio, user_id):
-
-    if not update.message.reply_to_message.voice:
-        update.message.reply_text("tHiS Is nOT aN AUdIo")
+    if not update.message.reply_to_message.photo:
+        update.message.reply_text("tHiS Is nOT aN iMAgE")
         return
-
-    audio  = context.bot.getFile(update.message.reply_to_message.voice)
-    ogg = f"audio{user_id}.ogg"
-    wav = f"audio{user_id}.wav"
-    audio.download(ogg)
-
-    stream = ffmpeg.input(ogg)
-    stream = ffmpeg.output(stream, wav)
-    stream = ffmpeg.overwrite_output(stream)
-    return stream
+    image = context.bot.get_file(file_id = update.message.reply_to_message.photo[-1])
+    image.download(f"toDistort{user_id}.jpg")
+    update.message.reply_text("yOuR pHoTO iS bEinG dIsTorRTeD")
+    return image
 
 def createMP4(update, context, directory, user_id):
     
@@ -94,22 +77,12 @@ def createMP4(update, context, directory, user_id):
     video = open(f"distorted{user_id}.mp4", "rb")
     return video
 
-def deleteDirs(directory, file1, file2, file3, user_id):
-
-    # Deleting the created and downloaded files
-    if directory:
-        os.system(f"rm -rf {directory}")
-    os.remove(f"{file1[:-4]}{user_id}{file1[len(file1) -  4::]}")
-    os.remove(f"{file2[:-4]}{user_id}{file2[len(file2) -  4::]}")
-    if file3:
-        os.remove(f"{file3[:-4]}{user_id}{file3[len(file3) -  4::]}")
 
 # Creating the gif
 def getGif(update, context):
 
     user_id = update.message.from_user.id
     pic = update.message.photo
-
     downloadImage(update, context, pic, user_id)
 
     # Getting the image dimmensions and setting up a list for the 60 arguments of distort function
@@ -137,11 +110,27 @@ def getGif(update, context):
     deleteDirs(directory, "toDistort.jpg", "distorted.mp4", None, user_id)
 
 
+# Function to download the audio from the user's reply
+def downloadAudio(update, context, audio, user_id):
+
+    if not update.message.reply_to_message.voice:
+        update.message.reply_text("tHiS Is nOT aN AUdIo")
+        return
+
+    audio  = context.bot.getFile(update.message.reply_to_message.voice)
+    ogg = f"audio{user_id}.ogg"
+    wav = f"audio{user_id}.wav"
+    audio.download(ogg)
+
+    stream = ffmpeg.input(ogg)
+    stream = ffmpeg.output(stream, wav)
+    stream = ffmpeg.overwrite_output(stream)
+    return stream
+
 def audio(update, context):
 
     user_id = update.message.from_user.id
     audio = update.message.audio
-
     audioIn = downloadAudio(update, context, audio, user_id)
     ffmpeg.run(audioIn)
     audioOut = f"audioDistorted{user_id}.wav"
@@ -164,13 +153,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("audio", audio))
-    dp.add_handler(ConversationHandler(
-        entry_points = [CommandHandler("gif", gif)],
-        states = {
-            GET_GIF: [MessageHandler(Filters.photo | Filters.regex(r'\/gif') | Filters.regex(r'\/gif@theDistortionBot'), getGif)]
-        },
-        fallbacks = []
-    ))
+    dp.add_handler(CommandHandler("gif", getGif))
 
 
     updater.start_polling()
