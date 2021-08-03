@@ -1,4 +1,0 @@
-help - Helps people
-start - Also helps people
-gif - Replies when to send an image and then distorts it
-audio - Distorts audio
