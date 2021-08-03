@@ -11,7 +11,6 @@ TOKEN = ""
 
 # Function to enable multithread on the distort function in order to make it faster
 def enableMultithread(function, args):
-    
     pool = Pool()
     pool.starmap(function, args)
     pool.close()
@@ -19,17 +18,15 @@ def enableMultithread(function, args):
 
 # Start command that explains the usage of the bot
 def start(update, context):     
-
     update.message.reply_text("This is a distortion bot. Use /help to see all the commands")
 
 # Help command that explains the usage of the bot
 def help(update, context):
-
     update.message.reply_text("/gif - Reply with a picture and I'll create a distorted gif on it\n/vibrato - Reply an audio and I'll add vibrato to it\n/bass - Reply an audio and I'll bass boost it")
 
 # Creating the gif
 def getGif(update, context):
-
+    # Receiving the original image
     user_id = update.message.from_user.id
     pic = update.message.photo
     md.downloadImage(update, context, pic, user_id)
@@ -48,36 +45,45 @@ def getGif(update, context):
         imageOut = os.path.join(directory, f"out{pct:03d}.jpg")
         args.append((photo, imageOut, dims, pct, directory, user_id))
 
-    # Using the multithreaded distort
+    # Using the multithreaded distort and creating MP4
     enableMultithread(md.distort, args)
-
     video = md.createMP4(update, context, directory, user_id)
-
     context.bot.sendAnimation(animation = video, chat_id = update.message.chat_id)
     video.close()
-
     md.deleteDirs(directory, "toDistort.jpg", "distorted.mp4", None, user_id)
 
+# Function to add vibrato effect to audio
 def vibratoAudio(update, context):
+    # Receiving the audio
     user_id = update.message.from_user.id
     audio = update.message.audio
     audioIn = md.downloadAudio(update, context, audio, user_id)
     ffmpeg.run(audioIn)
+
+    # Adding the effect
     audioOut = f"audioDistorted{user_id}.wav"
     md.vibrato(f"audio{user_id}.wav", audioOut)
     voiceToSend = open(audioOut, "rb")
+
+    # Sending the distorted audio
     context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id)
     voiceToSend.close()
     md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
 
+# Function to add bass boost effect to audio
 def bassBoostAudio(update, context):
+    # Receiving the audio
     user_id = update.message.from_user.id
     audio = update.message.audio
     audioIn = md.downloadAudio(update, context, audio, user_id)
     ffmpeg.run(audioIn)
+
+    # Adding the effect
     audioOut = f"audioDistorted{user_id}.wav"
     md.bassBoost(f"audio{user_id}.wav", audioOut)
     voiceToSend = open(audioOut, "rb")
+
+    # Sending the distorted audio
     context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id)
     voiceToSend.close()
     md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
