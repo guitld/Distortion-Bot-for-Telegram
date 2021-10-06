@@ -27,11 +27,15 @@ def downloadImage(update, context, pic, user_id):
 
 # Function to download the audio from the user's reply
 def downloadAudio(update, context, audio, user_id):
-    if not update.message.reply_to_message.voice:
+    if update.message.reply_to_message.voice:
+        audio = context.bot.getFile(update.message.reply_to_message.voice)
+    elif update.message.reply_to_message.audio:
+        audio = context.bot.getFile(update.message.reply_to_message.audio)
+    else:
         update.message.reply_text("tHiS Is nOT aN AUdIo")
         return
+
     # Getting the original audio
-    audio  = context.bot.getFile(update.message.reply_to_message.voice)
     ogg = f"audio{user_id}.ogg"
     wav = f"audio{user_id}.wav"
     audio.download(ogg)
