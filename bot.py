@@ -48,7 +48,7 @@ def getGif(update, context):
     # Using the multithreaded distort and creating MP4
     enableMultithread(md.distort, args)
     video = md.createMP4(update, context, directory, user_id)
-    context.bot.sendAnimation(animation = video, chat_id = update.message.chat_id)
+    context.bot.sendAnimation(animation = video, chat_id = update.message.chat_id, reply_to_message_id = update.message.message_id)
     video.close()
     md.deleteDirs(directory, "toDistort.jpg", "distorted.mp4", None, user_id)
 
@@ -66,7 +66,7 @@ def vibratoAudio(update, context):
     voiceToSend = open(audioOut, "rb")
 
     # Sending the distorted audio
-    context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id)
+    context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id, reply_to_message_id = update.message.message_id)
     voiceToSend.close()
     md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
 
@@ -84,7 +84,7 @@ def bassBoostAudio(update, context):
     voiceToSend = open(audioOut, "rb")
 
     # Sending the distorted audio
-    context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id)
+    context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id, reply_to_message_id = update.message.message_id)
     voiceToSend.close()
     md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
 
