@@ -22,7 +22,7 @@ def start(update, context):
 
 # Help command that explains the usage of the bot
 def help(update, context):
-    update.message.reply_text("/gif - Reply with a picture and I'll create a distorted gif on it\n/vibrato - Reply an audio and I'll add vibrato to it\n/bass - Reply an audio and I'll bass boost it")
+    update.message.reply_text("/gif - Reply with a picture and I'll create a distorted gif on it\n/vibrato - Reply an audio and I'll add vibrato to it\n/bass - Reply an audio and I'll bass boost it\n/vibrass - Reply an audio and I'll bass boost and vibrato it\n")
 
 # Creating the gif
 def getGif(update, context):
@@ -88,6 +88,25 @@ def bassBoostAudio(update, context):
     voiceToSend.close()
     md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
 
+# Function to add bass boost and vibrato effect to audio
+def vibrassAudio(update, context):
+    user_id = update.message.from_user.id
+    audio = update.message.audio
+    audioIn = md.downloadAudio(update, context, audio, user_id)
+    ffmpeg.run(audioIn)
+
+    # Adding the effect
+    audioOut = f"audioDistorted{user_id}.wav"
+    audioBridge = f"audioBridge{user_id}.wav"
+    md.bassBoost(f"audio{user_id}.wav", audioBridge)
+    md.vibrato(audioBridge, audioOut)
+    voiceToSend = open(audioOut, "rb")
+
+    # Sending the distorted audio
+    context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id, reply_to_message_id = update.message.message_id)
+    voiceToSend.close()
+    md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
+
 def main():
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO,
@@ -101,7 +120,7 @@ def main():
     dp.add_handler(CommandHandler("vibrato", vibratoAudio))
     dp.add_handler(CommandHandler("gif", getGif))
     dp.add_handler(CommandHandler("bass", bassBoostAudio))
-
+    dp.add_handler(CommandHandler("vibrass", vibrassAudio))
 
     updater.start_polling()
     logging.info("=== Bot running! ===")
