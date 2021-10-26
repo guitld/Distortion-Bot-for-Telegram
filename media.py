@@ -4,7 +4,7 @@ import imageio
 import ffmpeg
 
 # Function to delete files and directories
-def deleteDirs(directory, file1, file2, file3, user_id):
+def deleteDirs(directory, file1, file2, file3, file4, user_id):
     # Deleting the created and downloaded files
     if directory:
         os.system(f"rm -rf {directory}")
@@ -12,6 +12,8 @@ def deleteDirs(directory, file1, file2, file3, user_id):
     os.remove(f"{file2[:-4]}{user_id}{file2[len(file2) -  4::]}")
     if file3:
         os.remove(f"{file3[:-4]}{user_id}{file3[len(file3) -  4::]}")
+    if file4:
+        os.remove(f"{file4[:-4]}{user_id}{file4[len(file4) -  4::]}")
 
 # Function to download the image from the user's replay
 def downloadImage(update, context, pic, user_id):

@@ -7,7 +7,7 @@ import subprocess
 import ffmpeg
 import media as md
 
-TOKEN = ""
+TOKEN = "1827536113:AAFB3AGKwsvFnAJSrkjwSS73-tULHWDE04I"
 
 # Function to enable multithread on the distort function in order to make it faster
 def enableMultithread(function, args):
@@ -50,7 +50,7 @@ def getGif(update, context):
     video = md.createMP4(update, context, directory, user_id)
     context.bot.sendAnimation(animation = video, chat_id = update.message.chat_id, reply_to_message_id = update.message.message_id)
     video.close()
-    md.deleteDirs(directory, "toDistort.jpg", "distorted.mp4", None, user_id)
+    md.deleteDirs(directory, "toDistort.jpg", "distorted.mp4", None, None, user_id)
 
 # Function to add vibrato effect to audio
 def vibratoAudio(update, context):
@@ -68,7 +68,7 @@ def vibratoAudio(update, context):
     # Sending the distorted audio
     context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id, reply_to_message_id = update.message.message_id)
     voiceToSend.close()
-    md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
+    md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", None, user_id)
 
 # Function to add bass boost effect to audio
 def bassBoostAudio(update, context):
@@ -86,7 +86,7 @@ def bassBoostAudio(update, context):
     # Sending the distorted audio
     context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id, reply_to_message_id = update.message.message_id)
     voiceToSend.close()
-    md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
+    md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", None, user_id)
 
 # Function to add bass boost and vibrato effect to audio
 def vibrassAudio(update, context):
@@ -105,7 +105,7 @@ def vibrassAudio(update, context):
     # Sending the distorted audio
     context.bot.sendVoice(voice = voiceToSend, chat_id = update.message.chat_id, reply_to_message_id = update.message.message_id)
     voiceToSend.close()
-    md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", user_id)
+    md.deleteDirs(None, "audio.wav", "audioDistorted.wav", "audio.ogg", "audioBridge.wav", user_id)
 
 def main():
     logger = logging.getLogger(__name__)
